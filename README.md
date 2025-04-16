@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # promo-perumahan
 
 This template should help get you started developing with Vue 3 in Vite.
@@ -27,3 +28,7 @@ npm run dev
 ```sh
 npm run build
 ```
+=======
+# NewVSL
+Website Satria Land V.2.0.1
+>>>>>>> 34e6a4ed09f5b3b8c1304facdb7ba74e1feacd98
