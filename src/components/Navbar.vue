@@ -2,6 +2,8 @@
   <!-- Floating Glass Navbar -->
   <nav
     class="fixed top-4 left-4 right-4 z-50 backdrop-blur-md bg-gray-900/70 text-white py-3 px-6 rounded-xl border border-gray-700/50 shadow-xl transition-all duration-300 hover:bg-gray-900/80 hover:backdrop-blur-lg max-w-screen-xl mx-auto"
+    role="navigation"
+    aria-label="Main Navigation"
   >
     <div class="flex justify-between items-center">
       <!-- Logo -->
@@ -9,17 +11,19 @@
         href="#home"
         class="inline-block transition-all duration-300 hover:scale-105"
         @click.prevent="scrollToSection('home')"
+        aria-label="Scroll to Beranda"
       >
         <img
           src="@/assets/logo/logonav.png"
           alt="Satria Land"
           class="h-10 sm:h-12"
+          loading="lazy"
         />
       </a>
 
       <!-- Desktop Menu -->
-      <ul class="hidden md:flex space-x-6 lg:space-x-8">
-        <li v-for="item in menuItems" :key="item.id">
+      <ul class="hidden md:flex space-x-6 lg:space-x-8" role="menubar">
+        <li v-for="item in menuItems" :key="item.id" role="none">
           <a
             :href="item.href"
             class="relative px-2 py-1 font-medium text-sm lg:text-base transition-colors duration-300 group"
@@ -28,6 +32,8 @@
               'hover:text-amber-300': activeSection !== item.id,
             }"
             @click.prevent="scrollToSection(item.id)"
+            role="menuitem"
+            :aria-current="activeSection === item.id ? 'page' : null"
           >
             {{ item.label }}
             <span
@@ -44,6 +50,8 @@
       <button
         class="md:hidden p-2 rounded-lg hover:bg-gray-800/50 transition-colors"
         @click="toggleMenu"
+        aria-label="Toggle mobile menu"
+        :aria-expanded="isOpen"
       >
         <MenuIcon
           class="w-6 h-6 transition-transform duration-300"
@@ -57,6 +65,8 @@
       v-if="isOpen"
       class="md:hidden mt-4 py-4 px-4 rounded-xl backdrop-blur-lg bg-gray-800/80 border border-gray-700/50 shadow-lg animate-slide-down"
       style="position: absolute; top: calc(100% + 0.5rem); left: 0; right: 0; z-index: 40;"
+      role="menu"
+      aria-label="Mobile Navigation"
     >
       <div class="space-y-3">
         <a
@@ -69,6 +79,8 @@
             'hover:bg-gray-700/50': activeSection !== item.id,
           }"
           @click.prevent="handleMobileClick(item.id)"
+          role="menuitem"
+          :aria-current="activeSection === item.id ? 'page' : null"
         >
           {{ item.label }}
         </a>
@@ -80,6 +92,7 @@
 <script setup>
 import { Menu as MenuIcon } from "lucide-vue-next";
 import { ref, onMounted, onUnmounted } from "vue";
+import debounce from "lodash.debounce";
 
 const isOpen = ref(false);
 const activeSection = ref("home");
@@ -134,12 +147,14 @@ const toggleMenu = () => {
 // Setup Intersection Observer untuk deteksi section aktif
 let observer;
 
-const setupObserver = () => {
+const setupObserver = debounce(() => {
   const options = {
     root: null,
     rootMargin: "0px",
     threshold: 0.5,
   };
+
+  if (observer) observer.disconnect();
 
   observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
@@ -154,15 +169,15 @@ const setupObserver = () => {
     const section = document.getElementById(item.id);
     if (section) observer.observe(section);
   });
-};
+}, 200);
 
 // Handle hash change saat page load
-const handleHashChange = () => {
+const handleHashChange = debounce(() => {
   const hash = window.location.hash.substring(1);
   if (hash && menuItems.some((item) => item.id === hash)) {
     scrollToSection(hash);
   }
-};
+}, 200);
 
 onMounted(() => {
   setupObserver();
@@ -200,7 +215,7 @@ html {
 
 /* Tambahkan shadow dan jarak untuk memisahkan mobile menu */
 .md\\:hidden + div {
-  margin-top: 1rem; /* Jarak antara navbar dan menu */
+  margin-top: 0.5rem; /* Kurangi jarak antara navbar dan menu */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Tambahkan shadow */
 }
 </style>

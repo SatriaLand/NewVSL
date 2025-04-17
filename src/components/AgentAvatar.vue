@@ -3,17 +3,22 @@
       <div class="relative group">
         <img
           :src="agent.avatar"
-          :alt="agent.name"
+          :alt="'Foto agen ' + agent.name"
           class="rounded-full ring-2 ring-amber-600 object-cover cursor-pointer
                  w-10 h-10 xs:w-12 xs:h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20
                  hover:scale-105 transition-transform duration-200"
           @click="modalOpen = true"
+          tabindex="0"
+          @keydown.enter="modalOpen = true"
+          role="button"
+          aria-label="'Buka detail agen ' + agent.name"
         />
         <!-- Overlay teks hover yang lebih sederhana -->
         <div
           class="absolute inset-0 rounded-full flex items-center justify-center 
                  bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 
                  transition-opacity duration-150 pointer-events-none"
+          aria-hidden="true"
         >
         </div>
       </div>

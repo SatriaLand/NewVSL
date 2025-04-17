@@ -37,25 +37,28 @@
       enter-active-class="transition duration-200 ease-out"
       leave-active-class="transition duration-150 ease-in"
       enter-from-class="opacity-0 translate-y-2"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 translate-y-2"
     >
       <div
         v-if="isOpen"
-        class="fixed bottom-24 right-6 w-full max-w-sm md:max-w-md lg:max-w-lg bg-gray-900 border border-amber-light/30 rounded-xl shadow-2xl overflow-hidden z-50 flex flex-col"
+        class="chat-window fixed bottom-24 right-6 w-80 bg-gray-900 border border-amber-light/30 rounded-xl shadow-2xl overflow-hidden z-50 flex flex-col"
         style="height: 480px; max-height: 80vh"
+        aria-modal="true"
         @click.stop
+        role="dialog"
+        aria-labelledby="chat-header"
       >
         <!-- Chat Header -->
         <div
           class="bg-amber-rich text-white p-4 flex justify-between items-center"
+          id="chat-header"
         >
           <div class="flex items-center space-x-2">
             <img
               src="@/assets/maskot/satria-icon.png"
-              alt="S.A.T.R.I.A."
+              alt="Ikon S.A.T.R.I.A."
               class="w-8 h-8 bg-white rounded-full p-1"
+              loading="lazy"
             />
             <h3 class="font-semibold text-sm md:text-base lg:text-lg">
               S.A.T.R.I.A.
@@ -74,71 +77,83 @@
         <div
           ref="messagesContainer"
           class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar"
+          role="log"
+          aria-live="polite"
         >
-          <!-- Initial greeting -->
+          <!-- Initial loading state -->
           <div
-            v-if="showInitialGreeting && isLoading"
+            v-if="isLoading && showInitialGreeting"
             class="text-center text-gray-400 py-8 h-full flex flex-col items-center justify-center"
+            role="status"
+            aria-label="Memuat pesan..."
           >
             <img
               src="@/assets/maskot/satria-greeting.png"
               alt="S.A.T.R.I.A. Greeting"
               class="mx-auto mb-4 w-16 h-16 md:w-24 md:h-24 animate-fade-in"
+              loading="lazy"
             />
-            <p class="text-amber-rich animate-fade-in-delay text-sm md:text-base">
+            <p
+              class="text-amber-rich animate-fade-in-delay text-sm md:text-base"
+            >
               Loading...
             </p>
           </div>
 
-          <!-- Message history -->
-          <div
-            v-for="(message, index) in messages"
-            :key="index"
-            class="flex"
-            :class="{ 'justify-end': message.sender === 'user' }"
-          >
-            <div v-if="message.sender === 'bot'" class="flex items-start gap-2">
-              <img
-                v-if="!hideBotAvatar"
-                src="@/assets/maskot/satria-icon.png"
-                alt="S.A.T.R.I.A."
-                class="w-6 h-6 rounded-full flex-shrink-0"
-              />
-              <div
-                class="bot-bubble"
-                v-if="message.isHtml"
-                v-html="message.text"
-              ></div>
-              <div class="bot-bubble" v-else>{{ message.text }}</div>
-            </div>
-            <div v-else class="user-bubble">
-              {{ message.text }}
-            </div>
-          </div>
-
-          <!-- Quick Reply Buttons -->
-          <div
-            v-if="showQuickReplies && !isTyping"
-            class="flex flex-wrap gap-2 mt-2"
-          >
-            <button
-              v-for="(reply, index) in quickReplies"
+          <!-- Message history (shown after loading completes) -->
+          <template v-if="!isLoading || !showInitialGreeting">
+            <div
+              v-for="(message, index) in messages"
               :key="index"
-              @click="sendQuickReply(reply)"
-              class="quick-reply"
+              class="flex"
+              :class="{ 'justify-end': message.sender === 'user' }"
             >
-              {{ reply }}
-            </button>
-          </div>
-
-          <!-- Typing indicator -->
-          <div v-if="isTyping" class="flex">
-            <div class="typing-indicator">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
+              <div
+                v-if="message.sender === 'bot'"
+                class="flex items-start gap-2"
+              >
+                <img
+                  v-if="!hideBotAvatar"
+                  src="@/assets/maskot/satria-icon.png"
+                  alt="S.A.T.R.I.A."
+                  class="w-6 h-6 rounded-full flex-shrink-0"
+                />
+                <div
+                  class="bot-bubble"
+                  v-if="message.isHtml"
+                  v-html="message.text"
+                ></div>
+                <div class="bot-bubble" v-else>{{ message.text }}</div>
+              </div>
+              <div v-else class="user-bubble">
+                {{ message.text }}
+              </div>
             </div>
-          </div>
+
+            <!-- Quick Reply Buttons -->
+            <div
+              v-if="showQuickReplies && !isTyping"
+              class="flex flex-wrap gap-2 mt-2"
+            >
+              <button
+                v-for="(reply, index) in quickReplies"
+                :key="index"
+                @click="sendQuickReply(reply)"
+                class="quick-reply"
+              >
+                {{ reply }}
+              </button>
+            </div>
+
+            <!-- Typing indicator -->
+            <div v-if="isTyping" class="flex">
+              <div class="typing-indicator">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </div>
+            </div>
+          </template>
         </div>
 
         <!-- Input Area -->
@@ -194,83 +209,39 @@ const messagesContainer = ref(null);
 const showQuickReplies = ref(false);
 const hideBotAvatar = ref(true);
 const quickReplies = ref(quickReplyOptions);
-const currentMenu = ref("main"); // 'main' or 'info'
-const isLoading = ref(false);
-const TYPING_DURATION = 1500; // 2 detik (bisa disesuaikan)
-const TYPING_DELAY = 800; // Delay sebelum mulai typing
+const currentMenu = ref("main");
+const isLoading = ref(true);
+const showInitialGreeting = ref(true);
+const TYPING_DURATION = 1500;
+const TYPING_DELAY = 800;
 
 const toggleChat = () => {
   isOpen.value = !isOpen.value;
-
   if (isOpen.value) {
     document.body.style.overflow = "hidden";
     hasUnreadMessages.value = false;
+
+    // Reset loading state when opening chat
     isLoading.value = true;
     showInitialGreeting.value = true;
-    hideBotAvatar.value = true;
-    showQuickReplies.value = false;
 
-    // Clear any existing messages if needed
     if (messages.value.length === 0) {
-      // Set a timeout to ensure loading always completes
-      const loadingTimeout = setTimeout(() => {
-        isLoading.value = false;
-        showInitialGreeting.value = false;
-      }, 3000); // Max 3 seconds loading time
-
-      // Simulate loading
+      // Show loading for 2 seconds before showing content
       setTimeout(() => {
-        clearTimeout(loadingTimeout);
         isLoading.value = false;
-        showInitialGreeting.value = false;
-        hideBotAvatar.value = false;
         addBotMessage(
-          "Halo! Saya S.A.T.R.I.A. (Sistem Aktif Temani Rumah Impian Anda). Ada yang bisa saya bantu?"
+          "Halo! Saya S.A.T.R.I.A. (Sistem Asisten Temani Rumah Impian Anda). Ada yang bisa saya bantu?"
         );
-
-        setTimeout(() => {
-          showQuickReplies.value = true;
-        }, 500);
-      }, 1500);
+        showQuickReplies.value = true;
+      }, 2000);
     } else {
-      // If chat has messages, skip loading
+      // If there are existing messages, skip loading
       isLoading.value = false;
       showInitialGreeting.value = false;
     }
   } else {
     document.body.style.overflow = "";
-    isLoading.value = false;
-    showInitialGreeting.value = false;
   }
-};
-const showInitialGreeting = () => {
-  showInitialGreeting.value = true;
-  hideBotAvatar.value = true;
-  showQuickReplies.value = false;
-
-  setTimeout(() => {
-    showInitialGreeting.value = false;
-    hideBotAvatar.value = false;
-    addBotMessage(
-      "Halo! Saya S.A.T.R.I.A. (Sistem Aktif Temani Rumah Impian Anda). Ada yang bisa saya bantu?"
-    );
-
-    setTimeout(() => {
-      showMainMenu();
-    }, 500);
-  }, 1500);
-};
-
-const showMainMenu = () => {
-  currentMenu.value = "main";
-  quickReplies.value = quickReplyOptions;
-  showQuickReplies.value = true;
-};
-
-const showInfoSubMenu = () => {
-  currentMenu.value = "info";
-  quickReplies.value = infoSubMenu;
-  showQuickReplies.value = true;
 };
 
 const closeChat = () => {
@@ -288,36 +259,32 @@ const scrollToBottom = () => {
 
 const sendMessage = () => {
   if (!userInput.value.trim()) return;
-
   addMessage({
     text: userInput.value,
     sender: "user",
     timestamp: new Date(),
   });
-
   const userMessage = userInput.value.toLowerCase();
   userInput.value = "";
   showQuickReplies.value = false;
   isTyping.value = true;
   scrollToBottom();
 
-  // Gunakan konstanta yang telah ditentukan
   setTimeout(() => {
     const response = getBotResponse(userMessage);
     addBotMessage(response);
-    isTyping.value = false;
-    scrollToBottom();
-
     if (response.includes("tidak mengerti")) {
       setTimeout(() => {
-        if (currentMenu.value === 'main') {
+        if (currentMenu.value === "main") {
           showMainMenu();
         } else {
           showInfoSubMenu();
         }
       }, 300);
     }
-  }, TYPING_DURATION); // Gunakan durasi yang lebih lama
+    isTyping.value = false;
+    showQuickReplies.value = true;
+  }, TYPING_DURATION);
 };
 
 const sendQuickReply = (reply) => {
@@ -326,21 +293,22 @@ const sendQuickReply = (reply) => {
     sender: "user",
     timestamp: new Date(),
   });
-
+  scrollToBottom();
   showQuickReplies.value = false;
   isTyping.value = true;
-  scrollToBottom();
 
   setTimeout(() => {
-    if (currentMenu.value === 'main') {
+    if (currentMenu.value === "main") {
       handleMainMenuReply(reply);
     } else {
       handleInfoSubMenuReply(reply);
     }
     isTyping.value = false;
     scrollToBottom();
-  }, TYPING_DURATION); // Gunakan durasi yang sama
+    showQuickReplies.value = true;
+  }, TYPING_DURATION);
 };
+
 const handleMainMenuReply = (reply) => {
   let responseKey = "";
   if (reply.includes("Info")) {
@@ -387,7 +355,7 @@ const handleInfoSubMenuReply = (reply) => {
   }
 
   addBotMessage(response);
-  showInfoSubMenu(); // Show sub-menu again after response
+  showInfoSubMenu();
 };
 
 const getBotResponse = (userMessage) => {
@@ -417,7 +385,7 @@ const getBotResponse = (userMessage) => {
 };
 
 const addBotMessage = (htmlContent) => {
-  isLoading.value = false; // Ensure loading is always false when message appears
+  isLoading.value = false;
   showInitialGreeting.value = false;
   addMessage({
     text: htmlContent,
@@ -430,10 +398,21 @@ const addBotMessage = (htmlContent) => {
 const addMessage = (message) => {
   messages.value.push(message);
   scrollToBottom();
-
   if (!isOpen.value && message.sender === "bot") {
     hasUnreadMessages.value = true;
   }
+};
+
+const showMainMenu = () => {
+  currentMenu.value = "main";
+  quickReplies.value = quickReplyOptions;
+  showQuickReplies.value = true;
+};
+
+const showInfoSubMenu = () => {
+  currentMenu.value = "info";
+  quickReplies.value = infoSubMenu;
+  showQuickReplies.value = true;
 };
 
 onMounted(() => {
@@ -455,22 +434,20 @@ onUnmounted(() => {
 /* Typing indicator animation */
 .typing-indicator {
   display: flex;
-  padding: 10px 16px;
   background-color: rgba(231, 188, 76, 0.1);
   border-radius: 18px;
   border: 1px solid rgba(231, 188, 76, 0.3);
+  padding: 10px 16px;
   animation: fadeIn 0.3s ease-out;
 }
-
 .typing-indicator .dot {
   width: 8px;
   height: 8px;
   margin: 0 2px;
   background-color: #f7c948;
   border-radius: 50%;
-  animation: bounce 1.5s infinite ease-in-out; /* Durasi animasi lebih lama */
+  animation: bounce 1.5s infinite ease-in-out;
 }
-
 .typing-indicator .dot:nth-child(1) {
   animation-delay: 0.1s;
 }
@@ -480,9 +457,9 @@ onUnmounted(() => {
 .typing-indicator .dot:nth-child(3) {
   animation-delay: 0.5s;
 }
-
 @keyframes bounce {
-  0%, 60% {  /* Persentase lebih besar untuk gerakan lebih lambat */
+  0%,
+  60% {
     transform: translateY(0);
   }
   30% {
@@ -499,9 +476,6 @@ onUnmounted(() => {
   max-width: 80%;
   margin-left: auto;
 }
-.chat-loading {
-  transition: opacity 0.3s ease;
-}
 .bot-bubble {
   background-color: #374151;
   color: #fef3c7;
@@ -510,12 +484,10 @@ onUnmounted(() => {
   max-width: 80%;
   margin-right: auto;
 }
-
 .bot-bubble :deep(ul) {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
-
 .bot-bubble :deep(li) {
   margin-bottom: 0.25rem;
 }
@@ -531,7 +503,6 @@ onUnmounted(() => {
   transition: all 0.15s ease;
   cursor: pointer;
 }
-
 .quick-reply:hover {
   background-color: rgba(231, 188, 76, 0.2);
   transform: translateY(-1px);
@@ -555,13 +526,12 @@ onUnmounted(() => {
 /* Initial greeting animation */
 .animate-fade-in {
   animation: fadeIn 0.8s ease-in-out forwards;
+  opacity: 0;
 }
-
 .animate-fade-in-delay {
   animation: fadeIn 0.8s ease-in-out 0.3s forwards;
   opacity: 0;
 }
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -571,6 +541,11 @@ onUnmounted(() => {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Chat window transitions */
+.chat-window {
+  transition: opacity 0.3s ease;
 }
 
 /* Responsiveness */
@@ -584,8 +559,15 @@ onUnmounted(() => {
     font-size: 0.8rem;
   }
 }
-
+@media (min-width: 768px) {
+  .chat-window {
+    width: 400px;
+  }
+}
 @media (min-width: 1024px) {
+  .chat-window {
+    width: 500px;
+  }
   .quick-reply {
     font-size: 0.9rem;
     padding: 6px 12px;
@@ -594,5 +576,11 @@ onUnmounted(() => {
   .user-bubble {
     font-size: 1rem;
   }
+}
+
+/* Chat window size */
+.chat-window {
+  height: 480px;
+  max-height: 80vh;
 }
 </style>

@@ -1,38 +1,77 @@
 <template>
-  <div class="relative w-full h-screen overflow-hidden" id="home">
+  <div
+    class="relative w-full h-screen overflow-hidden"
+    id="home"
+    aria-labelledby="hero-slider-heading"
+    role="region"
+  >
     <!-- Slide Gambar -->
     <div
       class="flex transition-transform duration-1000 ease-in-out h-full"
       :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
+      role="list"
+      aria-live="polite"
     >
       <div
         v-for="(slide, index) in slides"
         :key="index"
         class="w-full h-full flex-none relative"
+        role="listitem"
+        :aria-label="`Slide ${index + 1} dari ${slides.length}: ${slide.alt}`"
       >
-        <!-- Gambar -->
+        <!-- Gambar untuk layar besar (HD) -->
         <img
           :src="slide.image"
           :alt="slide.alt"
-          class="w-full h-full object-cover blur-sm md:blur-none"
+          class="w-full h-full object-cover"
+          :class="{ hidden: isSmallScreen }"
+          loading="lazy"
+          decoding="async"
         />
-        <!-- Teks di atas gambar (hanya untuk mobile) -->
+
+        <!-- Gambar untuk layar kecil (blur) -->
+        <img
+          :src="slide.image"
+          :alt="slide.alt"
+          class="w-full h-full object-cover blur-md"
+          :class="{ hidden: !isSmallScreen }"
+          loading="lazy"
+          decoding="async"
+        />
+
+        <!-- Teks dan tombol hanya untuk layar <400px -->
         <div
-          class="absolute inset-0 flex items-center justify-center bg-black/50 text-white text-center px-4 md:hidden"
+          v-if="isSmallScreen"
+          class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white text-center px-4"
         >
-          <h2 class="text-lg font-bold">{{ slide.alt }}</h2>
+          <h2 id="hero-slider-heading" class="text-lg font-bold mb-4">
+            {{ slide.alt }}
+          </h2>
+          <button
+            class="bg-amber-rich text-white px-6 py-2 rounded-lg hover:bg-amber-dark transition-colors"
+            @click="scrollToDaftar"
+          >
+            Lihat Perumahan
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Indikator (Dots) -->
-    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+    <div
+      class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2"
+      role="navigation"
+      aria-label="Navigasi slide"
+    >
       <span
         v-for="(_, index) in slides"
         :key="index"
         @click="goToSlide(index)"
         class="w-3 h-3 rounded-full cursor-pointer"
         :class="index === currentIndex ? 'bg-amber-rich' : 'bg-gray-400'"
+        :aria-label="`Ke slide ${index + 1}`"
+        :aria-current="index === currentIndex ? 'true' : null"
+        tabindex="0"
       />
     </div>
   </div>
@@ -40,9 +79,7 @@
 
 <script>
 import { ChevronLeft, ChevronRight } from "lucide-vue-next";
-import slide1 from "@/assets/images/BGHERO1.jpg";
-import slide2 from "@/assets/images/BGHERO2.jpg";
-import slide3 from "@/assets/images/BGHERO3.jpg";
+import slide1 from "@/assets/images/BGHERO.jpg";
 
 export default {
   name: "HeroSlider",
@@ -53,16 +90,19 @@ export default {
   data() {
     return {
       currentIndex: 0,
-      slides: [
-        { image: slide1, alt: "Perumahan Modern" },
-        { image: slide2, alt: "Pemandangan Asri" },
-        { image: slide3, alt: "Rumah Mewah" },
-      ],
+      slides: [{ image: slide1, alt: "Building Dreams Creating Futures" }],
       autoSlideInterval: null,
+      isSmallScreen: false,
     };
   },
   mounted() {
     this.startAutoSlide();
+    this.checkScreenSize();
+    window.addEventListener("resize", this.checkScreenSize);
+  },
+  beforeUnmount() {
+    clearInterval(this.autoSlideInterval);
+    window.removeEventListener("resize", this.checkScreenSize);
   },
   methods: {
     nextSlide() {
@@ -82,9 +122,15 @@ export default {
     startAutoSlide() {
       this.autoSlideInterval = setInterval(this.nextSlide, 7000); // 7 detik
     },
-  },
-  beforeUnmount() {
-    clearInterval(this.autoSlideInterval);
+    checkScreenSize() {
+      this.isSmallScreen = window.innerWidth < 400;
+    },
+    scrollToDaftar() {
+      const daftarSection = document.getElementById("daftar");
+      if (daftarSection) {
+        daftarSection.scrollIntoView({ behavior: "smooth" });
+      }
+    },
   },
 };
 </script>
@@ -102,11 +148,15 @@ img {
   will-change: transform;
 }
 
+/* Blur untuk gambar */
+.blur-md {
+  filter: blur(1px);
+}
+
 /* Responsif untuk mobile */
-@media (max-width: 768px) {
-  img {
-    object-fit: cover;
-    filter: blur(1px); /* Blur tipis untuk gambar di mobile */
+@media (max-width: 400px) {
+  .hidden-mobile {
+    display: none;
   }
 }
 </style>

@@ -2,12 +2,15 @@
   <div
     class="bg-white dark:bg-gray-800 rounded-xl p-6 h-full shadow-lg hover:shadow-xl transition-all duration-300"
     :class="{ 'ring-2 ring-amber-rich': isActive }"
+    role="article"
+    aria-labelledby="'testimonial-title-' + testimonialIndex"
   >
     <div class="flex items-start gap-4 mb-4">
       <div class="relative flex-shrink-0">
         <div
           v-if="!testimonial.avatar"
           class="w-14 h-14 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"
+          aria-hidden="true"
         ></div>
         <img
           :src="testimonial.avatar || 'https://via.placeholder.com/56'"
@@ -18,12 +21,15 @@
           loading="lazy"
         />
         <div class="absolute -bottom-1 -right-1 bg-amber-rich rounded-full p-1">
-          <QuoteIcon class="w-4 h-4 text-white" />
+          <QuoteIcon class="w-4 h-4 text-white" aria-hidden="true" />
         </div>
       </div>
 
       <div>
-        <h4 class="font-semibold text-gray-900 dark:text-white line-clamp-1">
+        <h4
+          :id="'testimonial-title-' + testimonialIndex"
+          class="font-semibold text-gray-900 dark:text-white line-clamp-1"
+        >
           {{ testimonial.name }}
         </h4>
         <p class="text-sm text-amber-dark mt-1">
@@ -32,7 +38,7 @@
       </div>
     </div>
 
-    <div class="flex gap-0.5 mb-3">
+    <div class="flex gap-0.5 mb-3" role="img" aria-label="Rating: {{ testimonial.rating }} dari 5">
       <template v-for="(star, i) in stars" :key="i">
         <StarIcon
           class="w-5 h-5"
@@ -41,6 +47,7 @@
             'text-amber-star fill-amber-star half-star': star === 'half',
             'text-gray-300 dark:text-gray-600': star === 'empty',
           }"
+          aria-hidden="true"
         />
       </template>
     </div>

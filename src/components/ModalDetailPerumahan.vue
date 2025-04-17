@@ -10,6 +10,7 @@
     <!-- Modal Container -->
     <div
       class="bg-gray-800 rounded-xl max-w-6xl w-full max-h-[90vh] flex flex-col"
+      role="document"
     >
       <!-- Modal Header -->
       <div
@@ -32,7 +33,7 @@
       </div>
 
       <!-- Modal Content -->
-      <div class="overflow-y-auto flex-1 custom-scrollbar">
+      <div class="overflow-y-auto flex-1 custom-scrollbar" tabindex="0">
         <div class="p-4 sm:p-6 grid md:grid-cols-2 gap-6">
           <!-- Media Section -->
           <div>
@@ -49,6 +50,8 @@
                   :alt="property.title"
                   class="w-full h-full object-contain"
                   loading="lazy"
+                  decoding="async"
+                  @load="onImageLoad"
                   ref="mainImage"
                 />
                 <iframe
@@ -58,6 +61,7 @@
                   frameborder="0"
                   allowfullscreen
                   title="Video properti"
+                  aria-label="Video properti"
                 ></iframe>
 
                 <!-- Fullscreen Button -->
@@ -99,8 +103,10 @@
               <!-- Media Indicators -->
               <div
                 class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-20"
+                role="tablist"
+                aria-label="Media navigation"
               >
-                <div
+                <button
                   v-for="(_, index) in mediaItems"
                   :key="index"
                   class="w-2 h-2 rounded-full transition-all"
@@ -108,13 +114,19 @@
                     'bg-amber-rich w-4': currentMediaIndex === index,
                     'bg-white bg-opacity-50': currentMediaIndex !== index,
                   }"
-                ></div>
+                  @click="setCurrentMedia(index)"
+                  :aria-label="'Media ' + (index + 1)"
+                  :aria-selected="currentMediaIndex === index"
+                  role="tab"
+                ></button>
               </div>
             </div>
 
             <!-- Thumbnails -->
             <div
               class="flex space-x-2 overflow-x-auto py-2 px-1 custom-scrollbar-thin"
+              role="list"
+              aria-label="Media thumbnails"
             >
               <button
                 v-for="(media, index) in mediaItems"
@@ -125,19 +137,19 @@
                   'opacity-75 hover:opacity-100': currentMediaIndex !== index,
                 }"
                 class="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded overflow-hidden transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-amber-rich"
-                :aria-label="
-                  'Tampilkan ' +
-                  (media.type === 'image' ? 'gambar' : 'video') +
-                  ' ' +
-                  (index + 1)
-                "
+                :aria-label="`Tampilkan ${
+                  media.type === 'image' ? 'gambar' : 'video'
+                } ${index + 1}`"
+                role="listitem"
               >
                 <img
                   v-if="media.type === 'image'"
                   :src="media.url"
                   :alt="'Thumbnail ' + (index + 1)"
                   class="w-full h-full object-cover"
-                  loading="lazy"
+                  decoding="async"
+                  @error="onThumbnailError(index)"
+                  :ref="'thumbnail-' + index"
                 />
                 <div
                   v-else
@@ -148,7 +160,7 @@
               </button>
             </div>
 
-            <!-- Facilities - Improved Responsive Layout -->
+            <!-- Facilities Section -->
             <div class="mt-6">
               <h4
                 class="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white flex items-center"
@@ -255,9 +267,9 @@
                 <div
                   class="flex justify-between items-center py-2 border-t border-gray-600"
                 >
-                  <span class="text-sm sm:text-base text-gray-300">IMB:</span>
+                  <span class="text-sm sm:text-base text-gray-300">PBG:</span>
                   <span class="font-medium text-sm sm:text-base">{{
-                    property.imb
+                    property.pbg
                   }}</span>
                 </div>
               </div>
@@ -357,6 +369,7 @@ import {
   Minimize2 as Minimize,
 } from "lucide-vue-next";
 import ModalPromo from "./ModalPromo.vue";
+import debounce from "lodash.debounce";
 
 export default {
   name: "ModalDetailPerumahan",
@@ -458,16 +471,12 @@ export default {
       this.currentMediaIndex = index;
     },
     formatPrice(price) {
-      if (price === undefined || price === null || price === "") {
-        return "Harga belum tersedia";
-      }
+      if (!price) return "Harga belum tersedia";
 
       const numericValue = String(price).replace(/[^0-9]/g, "");
       const number = Number(numericValue);
 
-      if (isNaN(number)) {
-        return "Harga tidak valid";
-      }
+      if (isNaN(number)) return "Harga tidak valid";
 
       return new Intl.NumberFormat("id-ID", {
         style: "currency",
@@ -477,7 +486,20 @@ export default {
         .format(number)
         .replace("IDR", "Rp");
     },
-    toggleFullscreen() {
+    onImageLoad(event) {
+      event.target.classList.add("loaded"); // Tambahkan kelas 'loaded' saat gambar selesai dimuat
+    },
+    validateMediaUrls() {
+      this.mediaItems.forEach((media, index) => {
+        if (media.type === "image" && (!media.url || media.url.trim() === "")) {
+          console.warn(
+            `URL gambar kosong atau tidak valid pada index ${index}.`
+          );
+          this.mediaItems[index].url = "/assets/images/default-thumbnail.jpg"; // Ganti dengan gambar default
+        }
+      });
+    },
+    toggleFullscreen: debounce(function () {
       const elem = this.$refs.mainImage?.parentElement; // Ambil elemen container, bukan gambar langsung
       if (!elem) return;
 
@@ -502,7 +524,7 @@ export default {
         }
         this.isFullscreen = false;
       }
-    },
+    }, 300), // Debounce selama 300ms
     handleFullscreenChange() {
       this.isFullscreen = !!(
         document.fullscreenElement ||
@@ -524,6 +546,21 @@ export default {
     closePromoModal() {
       this.showPromoModal = false; // Sembunyikan modal promo
     },
+    onThumbnailLoad(index) {
+      console.log(
+        `Thumbnail ${index} berhasil dimuat: ${this.mediaItems[index].url}`
+      );
+      const imgElement = this.$refs[`thumbnail-${index}`];
+      if (imgElement) {
+        imgElement.classList.add("loaded");
+      }
+    },
+    onThumbnailError(index) {
+      console.error(
+        `Gambar thumbnail pada index ${index} gagal dimuat: ${this.mediaItems[index].url}`
+      );
+      this.mediaItems[index].url = "/assets/images/default-thumbnail.jpg"; // Ganti dengan gambar default
+    },
   },
   mounted() {
     document.addEventListener("fullscreenchange", this.handleFullscreenChange);
@@ -536,6 +573,7 @@ export default {
       this.handleFullscreenChange
     );
     this.checkDeviceSupport();
+    this.validateMediaUrls(); // Validasi URL media saat komponen dimuat
   },
   beforeUnmount() {
     document.removeEventListener(
@@ -589,5 +627,20 @@ export default {
 img.object-contain {
   object-fit: contain; /* Pastikan gambar sepenuhnya terlihat */
   object-position: center; /* Posisikan gambar di tengah */
+}
+
+/* Optimasi untuk gambar */
+img[loading="lazy"] {
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0;
+}
+img[loading="lazy"].loaded {
+  opacity: 1;
+}
+
+/* Focus outline for better accessibility */
+button:focus {
+  outline: 2px solid #f59e0b; /* Amber color */
+  outline-offset: 2px;
 }
 </style>

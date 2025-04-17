@@ -1,8 +1,15 @@
 <template>
-  <section id="agen" class="py-16 px-4 sm:px-8 lg:px-16 bg-gray-900">
+  <section
+    id="agen"
+    class="py-16 px-4 sm:px-8 lg:px-16 bg-gray-900"
+    aria-labelledby="sales-agents-heading"
+  >
     <div class="max-w-screen-xl mx-auto">
       <div class="text-center mb-12">
-        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+        <h2
+          id="sales-agents-heading"
+          class="text-3xl sm:text-4xl font-bold text-white mb-4"
+        >
           Tim Sales Profesional Kami
         </h2>
         <p class="text-lg text-gray-300 max-w-2xl mx-auto">
@@ -10,12 +17,18 @@
         </p>
       </div>
 
-      <AgentList :agents="agents" @open-modal="openModal" />
+      <AgentList
+        :agents="agents"
+        @open-modal="openModal"
+        role="list"
+        aria-label="Daftar agen sales"
+      />
 
-      <AgentModal 
-        v-if="isModalOpen" 
-        :agent="selectedAgent" 
-        @close="closeModal" 
+      <AgentModal
+        v-if="isModalOpen"
+        :agent="selectedAgent"
+        @close="closeModal"
+        aria-labelledby="agent-modal-title"
       />
     </div>
   </section>

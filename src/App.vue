@@ -5,7 +5,7 @@
       <HeroSlider />
       <FiturUnggulan />
       <DaftarPerumahan />
-     <!-- <Testimonials/>
+<!--       <Testimonials/>
       <SalesAgentList /> -->
       <MitraBank/>
       <ChatBubble />
@@ -24,6 +24,7 @@ import Testimonials from './components/Testimonials.vue';
 import MitraBank from './components/MitraBank.vue';
 import SalesAgentList from './components/SalesAgentList.vue';
 import ChatBubble from './components/ChatBubble.vue';
+
 export default {
   components: {
     Navbar,
@@ -34,12 +35,13 @@ export default {
     Testimonials,
     MitraBank,
     SalesAgentList,
-    ChatBubble
+    ChatBubble,
   },
 };
 </script>
 
 <style>
+/* Ensure no horizontal overflow */
 body {
   overflow-x: hidden;
 }

@@ -10,6 +10,7 @@
     <!-- Modal Container -->
     <div
       class="bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden"
+      role="document"
     >
       <!-- Modal Header -->
       <div
@@ -20,7 +21,7 @@
         </h3>
         <button
           @click="$emit('close')"
-          class="text-gray-400 hover:text-white transition-colors"
+          class="text-gray-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-amber-rich"
           aria-label="Tutup modal"
         >
           <XIcon class="w-6 h-6" />
@@ -35,6 +36,8 @@
             :src="currentProperty.image"
             :alt="'Banner Promo ' + currentProperty.title"
             class="w-full h-auto object-cover"
+            loading="lazy"
+            decoding="async"
           />
           <div
             class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4"
@@ -47,11 +50,12 @@
         </div>
 
         <!-- Promo Content -->
-        <div class="space-y-4">
+        <div class="space-y-4" role="list" aria-label="Daftar promo">
           <div
             v-for="(promo, index) in promos"
             :key="index"
             class="bg-gray-700 p-4 rounded-lg border-l-4 border-green-500"
+            role="listitem"
           >
             <h4 class="font-bold text-lg text-white mb-2">{{ promo.title }}</h4>
             <p class="text-gray-300 mb-3">{{ promo.description }}</p>
@@ -89,7 +93,7 @@
             </div>
             <div>
               <span class="font-medium">Harga:</span>
-              {{ currentProperty.price }}
+              {{ formatPrice(currentProperty.price) }}
             </div>
             <div>
               <span class="font-medium">Status:</span>
@@ -99,11 +103,11 @@
         </div>
 
         <!-- Terms and Conditions -->
-        <div class="mt-6 bg-gray-700 p-4 rounded-lg">
-          <h4 class="font-bold text-white mb-2">Syarat & Ketentuan:</h4>
+        <div class="mt-6 bg-gray-700 p-4 rounded-lg" role="region" aria-labelledby="terms-title">
+          <h4 id="terms-title" class="font-bold text-white mb-2">Syarat & Ketentuan:</h4>
           <ul class="list-disc list-inside text-gray-300 text-sm space-y-1">
             <li>Promo tidak dapat digabungkan dengan promo lainnya</li>
-            <li>Minimal pembelian {{ currentProperty.price }}</li>
+            <li>Minimal pembelian {{ formatPrice(currentProperty.price) }}</li>
             <li>
               Berlaku untuk pembelian sampai
               {{ promos[0]?.validUntil || "31 Desember 2024" }}
@@ -119,6 +123,7 @@
       <!-- Modal Footer -->
       <div
         class="sticky bottom-0 bg-gray-800 p-4 border-t border-gray-700 flex justify-center"
+        role="contentinfo"
       >
         <a
           :href="
@@ -135,6 +140,7 @@
           "
           target="_blank"
           class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg flex items-center justify-center transition-colors w-full max-w-md"
+          aria-label="Hubungi via WhatsApp untuk promo properti"
         >
           <PhoneIcon class="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
           Hubungi Via WhatsApp
@@ -221,6 +227,14 @@ export default {
     property(newVal) {
       this.currentProperty = newVal;
       this.promos = propertyPromos[newVal.title] || propertyPromos.default;
+    },
+  },
+  methods: {
+    formatPrice(price) {
+      return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+      }).format(price);
     },
   },
 };

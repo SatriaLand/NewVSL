@@ -1,8 +1,15 @@
 <template>
-  <section id="testimoni" class="py-16 px-4 sm:px-8 lg:px-16 bg-gray-850">
+  <section
+    id="testimoni"
+    class="py-16 px-4 sm:px-8 lg:px-16 bg-gray-850"
+    aria-labelledby="testimonials-heading"
+  >
     <div class="max-w-screen-xl mx-auto">
       <div class="text-center mb-12">
-        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+        <h2
+          id="testimonials-heading"
+          class="text-3xl sm:text-4xl font-bold text-white mb-4"
+        >
           Apa Kata Mereka?
         </h2>
         <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -12,18 +19,20 @@
       </div>
 
       <!-- Testimoni Carousel -->
-      <div class="relative">
+      <div class="relative" role="region" aria-label="Testimoni Carousel">
         <div
           class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth py-4 hide-scrollbar px-8 gap-8"
           ref="testimonialContainer"
           @scroll="handleScroll"
           @mouseenter="handleMouseEnter"
           @mouseleave="handleMouseLeave"
+          role="list"
         >
           <!-- Clone item terakhir di awal -->
           <div
             v-if="testimonials.length > 1"
             class="slide-item"
+            role="listitem"
             :class="{
               adjacent: activeTestimonial === 0,
               inactive:
@@ -41,6 +50,7 @@
             v-for="(testimonial, index) in testimonials"
             :key="index"
             class="slide-item"
+            role="listitem"
             :class="{
               active: activeTestimonial === index,
               adjacent: isAdjacent(index),
@@ -54,6 +64,7 @@
           <div
             v-if="testimonials.length > 1"
             class="slide-item"
+            role="listitem"
             :class="{
               adjacent: activeTestimonial === testimonials.length - 1,
               inactive:
@@ -69,19 +80,25 @@
         <button
           @click="scrollTestimonials(-1)"
           class="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 bg-gray-800 dark:bg-gray-800 text-amber-rich p-2 rounded-full shadow-md hover:bg-amber-rich hover:text-white transition-colors z-20"
+          aria-label="Testimoni sebelumnya"
         >
           <ChevronLeftIcon class="w-6 h-6" />
         </button>
         <button
           @click="scrollTestimonials(1)"
           class="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 bg-gray-800 dark:bg-gray-800 text-amber-rich p-2 rounded-full shadow-md hover:bg-amber-rich hover:text-white transition-colors z-20"
+          aria-label="Testimoni berikutnya"
         >
           <ChevronRightIcon class="w-6 h-6" />
         </button>
       </div>
 
       <!-- Dots Indicator -->
-      <div class="flex justify-center mt-8 gap-2">
+      <div
+        class="flex justify-center mt-8 gap-2"
+        role="navigation"
+        aria-label="Navigasi Testimoni"
+      >
         <button
           v-for="(_, index) in testimonials"
           :key="index"
@@ -92,7 +109,8 @@
               ? 'bg-amber-rich w-6'
               : 'bg-gray-300 dark:bg-gray-600'
           "
-          aria-label="Go to testimonial"
+          :aria-label="'Ke testimoni ' + (index + 1)"
+          :aria-current="activeTestimonial === index ? 'true' : null"
         ></button>
       </div>
     </div>
@@ -451,13 +469,12 @@ export default {
 
 /* Smooth transition for all cards */
 .flex-shrink-0 {
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  backface-visibility: hidden; /* Memperbaiki rendering */
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  backface-visibility: hidden;
   transform-style: preserve-3d;
   flex: 0 0 auto;
   scroll-snap-align: center;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .slide-item {
   flex: 0 0 auto;

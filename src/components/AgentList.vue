@@ -31,6 +31,8 @@
           >
             <div
               class="bg-black bg-opacity-70 text-white text-xs sm:text-sm rounded-full px-2 py-1 whitespace-nowrap"
+              role="tooltip"
+              aria-hidden="true"
             >
               Klik Saya
             </div>
@@ -38,7 +40,7 @@
         </div>
 
         <div class="mt-2 text-center">
-          <h3 class="text-xs sm:text-sm font-medium text-white">
+          <h3 class="text-xs sm:text-sm font-medium text-white" role="heading" aria-level="3">
             {{ agent.name }}
           </h3>
           <p class="text-[10px] sm:text-xs text-gray-400">
@@ -56,6 +58,7 @@
         :class="{
           'text-white border-white hover:bg-white/10': isShowingLess,
         }"
+        :aria-label="isShowingLess ? 'Tampilkan lebih banyak agen' : 'Tampilkan lebih sedikit agen'"
       >
         {{
           isShowingLess ? "Tampilkan Lebih Banyak" : "Tampilkan Lebih Sedikit"

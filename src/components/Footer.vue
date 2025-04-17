@@ -1,9 +1,15 @@
 <template>
-  <footer class="bg-gray-900 text-white py-8" id="kontak">
+  <footer
+    class="bg-gray-900 text-white py-8"
+    id="kontak"
+    aria-labelledby="footer-heading"
+  >
     <div class="container mx-auto px-4">
       <!-- Centered Grid Layout -->
       <div
         class="grid grid-cols-1 md:grid-cols-3 gap-1 mb-8 items-center justify-items-center"
+        role="contentinfo"
+        aria-label="Informasi kontak dan sosial media"
       >
         <!-- Column 1: Logo & Social Media -->
         <div class="flex flex-col items-center">
@@ -20,7 +26,7 @@
               aria-label="Facebook"
               class="hover:text-blue-400 transition"
             >
-              <FacebookIcon class="w-6 h-6" />
+              <FacebookIcon class="w-6 h-6" aria-hidden="true" />
             </a>
             <a
               href="https://wa.me/6281234567890"
@@ -29,7 +35,7 @@
               aria-label="WhatsApp"
               class="hover:text-green-400 transition"
             >
-              <PhoneIcon class="w-6 h-6" />
+              <PhoneIcon class="w-6 h-6" aria-hidden="true" />
             </a>
             <a
               href="https://instagram.com/namaperusahaan"
@@ -38,22 +44,25 @@
               aria-label="Instagram"
               class="hover:text-pink-400 transition"
             >
-              <InstagramIcon class="w-6 h-6" />
+              <InstagramIcon class="w-6 h-6" aria-hidden="true" />
             </a>
           </div>
         </div>
 
         <!-- Column 2: Contact Info -->
         <div class="text-center">
-          <h3 class="font-semibold text-lg mb-4">Hubungi Kami</h3>
+          <h3 class="font-semibold text-lg mb-4" id="contact-heading">
+            Hubungi Kami
+          </h3>
 
           <!-- Email -->
           <p class="mb-2">
             <a
               href="mailto:satrialandpalembang@gmail.com"
               class="hover:text-gray-300 transition"
+              aria-label="Email ke adminproperty@satrialand.id"
             >
-              satrialandpalembang@gmail.com
+              adminproperty@satrialand.id
             </a>
           </p>
 
@@ -63,17 +72,20 @@
               href="https://wa.me/62811710890"
               class="hover:text-gray-300 transition"
               target="_blank"
+              aria-label="Hubungi WhatsApp +62 811-710-890"
             >
               +62 811-710-890
             </a>
           </p>
 
+          <!-- Address -->
           <p class="mb-2 hover:text-gray-300 transition">
             <a
               href="https://www.google.com/maps/dir/-2.9865657,104.7170958/pt+permata+tri+mandiri/@-2.9187609,104.7093639,19z/data=!4m9!4m8!1m1!4e1!1m5!1m1!1s0x2e3b73d64f052bc3:0xbe93d72929b9d26c!2m2!1d104.7098972!2d-2.9185808?entry=ttu"
               target="_blank"
               rel="noopener noreferrer"
               class="block"
+              aria-label="Lihat lokasi di Google Maps"
             >
               Jl. Kol H Burlian No.104 Rt.24 Rw.09<br />
               Palembang, Sumatera Selatan
@@ -83,21 +95,28 @@
 
         <!-- Column 3: Hours & Back to Top -->
         <div class="text-center">
-          <h3 class="font-semibold text-lg mb-4">Jam Operasional</h3>
+          <h3 class="font-semibold text-lg mb-4" id="hours-heading">
+            Jam Operasional
+          </h3>
           <p class="text-gray-400 mb-2">Senin-Jumat: 08:30 - 16:00 WIB</p>
           <p class="text-gray-400">Sabtu: 09:00 - 14:00 WIB</p>
 
           <button
             @click="scrollToTop"
             class="mt-6 px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition flex items-center mx-auto"
+            aria-label="Kembali ke atas halaman"
           >
-            <ArrowUpIcon class="w-4 h-4 mr-2" /> Kembali ke Atas
+            <ArrowUpIcon class="w-4 h-4 mr-2" aria-hidden="true" /> Kembali ke
+            Atas
           </button>
         </div>
       </div>
 
       <!-- Centered Divider -->
-      <div class="border-t border-gray-700 mx-auto w-full max-w-2xl mb-6"></div>
+      <div
+        class="border-t border-gray-700 mx-auto w-full max-w-2xl mb-6"
+        aria-hidden="true"
+      ></div>
 
       <!-- Centered Copyright -->
       <div class="text-center">
