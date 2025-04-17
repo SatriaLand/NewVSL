@@ -20,7 +20,7 @@
         aria-label="Carousel Daftar Perumahan"
       >
         <div
-          class="flex transition-transform duration-700 ease-in-out"
+          class="flex transition-transform duration-300 ease-in-out"
           :style="{ transform: `translateX(${calculateTranslateX()}px)` }"
           role="list"
         >
@@ -50,7 +50,9 @@
             </h3>
             <p class="text-gray-400 mb-4">{{ property.location }}</p>
             <div class="flex justify-between items-center">
-              <span class="text-amber-rich font-bold">{{ property.price }}</span>
+              <span class="text-amber-rich font-bold">{{
+                property.price
+              }}</span>
               <button
                 @click="openModal(property)"
                 class="bg-amber-rich text-white py-2 px-4 rounded-lg hover:bg-amber-dark transition-colors flex items-center"
@@ -101,11 +103,11 @@ export default {
     ChevronLeftIcon: ChevronLeft,
     ChevronRightIcon: ChevronRight,
     EyeIcon: Eye,
-    ModalDetailPerumahan
+    ModalDetailPerumahan,
   },
   data() {
     return {
-      currentIndex: 2, 
+      currentIndex: 2,
       slideWidth: 0,
       visibleSlides: 1,
       containerWidth: 0,
@@ -146,12 +148,14 @@ export default {
       return -(this.currentIndex * this.slideWidth - centerOffset);
     },
     nextSlide() {
-      if (this.currentIndex < this.properties.length - 1) {
-        this.currentIndex++;
-      } else {
-        this.currentIndex = 0;
-      }
-      this.announceSlideChange();
+      this.$nextTick(() => {
+        if (this.currentIndex < this.properties.length - 1) {
+          this.currentIndex++;
+        } else {
+          this.currentIndex = 0;
+        }
+        this.announceSlideChange();
+      });
     },
     prevSlide() {
       if (this.currentIndex > 0) {
@@ -163,7 +167,9 @@ export default {
     },
     announceSlideChange() {
       const currentSlide = this.properties[this.currentIndex];
-      const announcement = `Slide ${this.currentIndex + 1} dari ${this.properties.length}: ${currentSlide.title}`;
+      const announcement = `Slide ${this.currentIndex + 1} dari ${
+        this.properties.length
+      }: ${currentSlide.title}`;
       this.$refs.carousel.setAttribute("aria-live", "polite");
       this.$refs.carousel.setAttribute("aria-label", announcement);
     },
@@ -175,8 +181,8 @@ export default {
     closeModal() {
       this.isModalOpen = false;
       document.body.style.overflow = "auto";
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -184,8 +190,8 @@ export default {
 /* Efek untuk slide tidak aktif */
 .opacity-50 {
   filter: blur(2px);
+  will-change: filter;
 }
-
 /* Pastikan container carousel memiliki overflow yang tepat */
 .relative {
   overflow: hidden;
