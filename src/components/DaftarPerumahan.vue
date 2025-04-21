@@ -114,7 +114,7 @@ export default {
       isModalOpen: false,
       selectedProperty: null,
       properties,
-      resizeTimeout: null, // Untuk debounce resize
+      resizeTimeout: null,
     };
   },
   mounted() {
@@ -141,7 +141,7 @@ export default {
     },
     debouncedUpdateSlideWidth() {
       clearTimeout(this.resizeTimeout);
-      this.resizeTimeout = setTimeout(this.updateSlideWidth, 200); // Debounce 200ms
+      this.resizeTimeout = setTimeout(this.updateSlideWidth, 200);
     },
     calculateTranslateX() {
       const centerOffset = (this.containerWidth - this.slideWidth) / 2;

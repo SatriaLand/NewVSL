@@ -1,16 +1,22 @@
-import slide1 from "@/assets/images/BGHERO1.jpg";
-import slide2 from "@/assets/images/BGHERO2.jpg";
-import slide3 from "@/assets/images/BGHERO3.jpg";
-import slide4 from "@/assets/images/BGHERO4.jpg";
-import slide5 from "@/assets/images/BGHERO5.jpg";
-import slide6 from "@/assets/images/BGHERO6.jpg";
-import slide7 from "@/assets/images/BGHERO7.jpg";
-import ce1 from "@/assets/perumahan/CarissmaMansion/ce1.jpg";
+// Carissma Mansion
+import cme1 from "@/assets/perumahan/CarissmaMansion/cme1.jpg";
+import cme2 from "@/assets/perumahan/CarissmaMansion/cme2.jpg";
+import cme3 from "@/assets/perumahan/CarissmaMansion/cme3.jpg";
+import cmr1 from "@/assets/perumahan/CarissmaMansion/cmr1.jpg";
+import cms1 from "@/assets/perumahan/CarissmaMansion/cms1.jpg";
+import cms2 from "@/assets/perumahan/CarissmaMansion/cms2.jpg";
+// Demang Mansion
+import dm1 from "@/assets/perumahan/DemangMansion/dm40.jpg";
+import dm2 from "@/assets/perumahan/DemangMansion/dmk.jpg";
+// Green Mansion
+import gm1 from "@/assets/perumahan/GreenMansion/gm1.jpg";
+import gm2 from "@/assets/perumahan/GreenMansion/gm2.jpg";
+
 export const properties = [
   {
     title: "Carissma Mansion - Emerald",
     location: "Jl. Sukabangun II Soak Simpur, Lr. Karya",
-    image: slide1,
+    image: cme2,
     description:
       "Perumahan cluster dengan konsep modern minimalis, lingkungan asri dan fasilitas lengkap. Cocok untuk keluarga muda yang mengutamakan kenyamanan dan keamanan.",
     type: "Tipe 75",
@@ -33,16 +39,16 @@ export const properties = [
       "Fasilitas Umum",
     ],
     media: [
-      { type: "image", url: ce1 },
-      { type: "image", url: slide2 },
-      { type: "image", url: slide3 },
-      { type: "video", url: "https://www.youtube.com/embed/example1" },
+      { type: "image", url: cme1 },
+      { type: "image", url: cme2 },
+      { type: "image", url: cme3 },
+      //{ type: "video", url: "https://www.youtube.com/embed/example1" },
     ],
   },
   {
     title: "Carissma Mansion - Ruby",
     location: "Jl. Sukabangun II Soak Simpur, Lr. Karya",
-    image: slide2,
+    image: 0,
     description:
       "Perumahan dengan view pegunungan dan udara segar. Konsep green living dengan banyak area terbuka hijau.",
     type: "Tipe 70",
@@ -65,15 +71,15 @@ export const properties = [
       "Fasilitas Umum",
     ],
     media: [
-      { type: "image", url: slide2 },
-      { type: "image", url: slide3 },
-      { type: "video", url: "https://www.youtube.com/embed/example2" },
+      { type: "image", url: cmr1 },
+      //{ type: "image", url: slide3 },
+      //{ type: "video", url: "https://www.youtube.com/embed/example2" },
     ],
   },
   {
     title: "Carissma Mansion - Sapphire",
     location: "Jl. Sukabangun II Soak Simpur, Lr. Karya",
-    image: slide3,
+    image: cms2,
     description:
       "Perumahan eksklusif di kawasan sejuk Palembang dengan view kota yang memukau. Fasilitas premium dan lingkungan yang nyaman.",
     type: "Tipe 45",
@@ -96,15 +102,15 @@ export const properties = [
       "Fasilitas Umum",
     ],
     media: [
-      { type: "image", url: slide3 },
-      { type: "image", url: slide4 },
-      { type: "video", url: "https://www.youtube.com/embed/example3" },
+      { type: "image", url: cms1 },
+      { type: "image", url: cms2 },
+      //{ type: "video", url: "https://www.youtube.com/embed/example3" },
     ],
   },
   {
-    title: "Demang Mansion",
+    title: "Demang Mansion - Type 40",
     location: "Jl. Kancil Putih II Gg. Bersama",
-    image: slide4,
+    image: dm1,
     description:
       "Perumahan dengan konsep keluarga, lingkungan yang rindang dan asri. Cocok untuk keluarga yang menyukai ketenangan.",
     type: "Tipe 40",
@@ -127,15 +133,15 @@ export const properties = [
       "Jalan Lebar",
     ],
     media: [
-      { type: "image", url: slide4 },
-      { type: "image", url: slide5 },
-      { type: "video", url: "https://www.youtube.com/embed/example4" },
+      { type: "image", url: dm1 },
+      //{ type: "image", url: dm2 },
+      //{ type: "video", url: "https://www.youtube.com/embed/example4" },
     ],
   },
   {
     title: "Demang Mansion - Kavling",
-    location: "Jl. Emerald No. 99, Bekasi",
-    image: slide5,
+    location: "Jl. Kancil Putih II Gg. Bersama",
+    image: dm2,
     description:
       "Kawasan perumahan modern dengan konsep kota mandiri. Lengkap dengan fasilitas komersial dan rekreasi dalam satu area.",
     type: "-",
@@ -155,15 +161,15 @@ export const properties = [
       "Jalan Lebar",
     ],
     media: [
-      { type: "image", url: slide5 },
-      { type: "image", url: slide6 },
-      { type: "video", url: "https://www.youtube.com/embed/example5" },
+      { type: "image", url: dm2 },
+      //{ type: "image", url: slide6 },
+      //{ type: "video", url: "https://www.youtube.com/embed/example5" },
     ],
   },
   {
     title: "Green Mansion",
     location: "Jl. Mahameru, 16 Ulu, Palembang",
-    image: slide6,
+    image: gm1,
     description:
       "Perumahan dengan view sungai alami dan taman yang luas. Konsep back to nature dengan modernitas.",
     type: "54",
@@ -181,9 +187,9 @@ export const properties = [
       "Jalan Lebar",
     ],
     media: [
-      { type: "image", url: slide6 },
-      { type: "image", url: slide7 },
-      { type: "video", url: "https://www.youtube.com/embed/example6" },
+      { type: "image", url: gm1 },
+      { type: "image", url: gm2 },
+      //{ type: "video", url: "https://www.youtube.com/embed/example6" },
     ],
   },
 ];

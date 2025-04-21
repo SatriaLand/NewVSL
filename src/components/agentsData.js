@@ -98,8 +98,6 @@ export default [
     projects: ["-"],
     avatar: avatar8,
   },
-
-  // Executive Marketing
   {
     id: 9,
     name: "Ahmad Ghazali",

@@ -3,7 +3,7 @@
     <!-- Floating Chat Button -->
     <button
       @click.stop="toggleChat"
-      class="fixed bottom-6 right-6 bg-amber-rich text-white p-4 rounded-full shadow-xl hover:bg-amber-dark transition-all duration-200 z-50 flex items-center justify-center"
+      class="fixed bottom-6 right-6 bg-amber-rich text-white p-4 rounded-full shadow-xl hover:bg-amber-dark transition-all duration-200 z-30 flex items-center justify-center"
       :class="{ 'animate-bounce': hasUnreadMessages }"
       aria-label="Buka chat"
     >
@@ -327,8 +327,8 @@ const handleMainMenuReply = (reply) => {
     responseKey = "pembayaran";
     addBotMessage(propertyResponses[responseKey]);
     showMainMenu();
-  } else if (reply.includes("agent")) {
-    responseKey = "agent";
+  } else if (reply.includes("admin")) {
+    responseKey = "admin";
     addBotMessage(propertyResponses[responseKey]);
     showMainMenu();
   } else if (reply.includes("Booking")) {
@@ -346,12 +346,12 @@ const handleInfoSubMenuReply = (reply) => {
   }
 
   let response = "";
-  if (reply.includes("Tipe")) {
-    response = propertyResponses.info.tipe;
-  } else if (reply.includes("Fasilitas")) {
-    response = propertyResponses.info.fasilitas;
-  } else if (reply.includes("Spesifikasi")) {
-    response = propertyResponses.info.spesifikasi;
+  if (reply.includes("Carissma")) {
+    response = propertyResponses.info.carissma;
+  } else if (reply.includes("Demang")) {
+    response = propertyResponses.info.demang;
+  } else if (reply.includes("Green")) {
+    response = propertyResponses.info.green;
   }
 
   addBotMessage(response);
@@ -371,8 +371,8 @@ const getBotResponse = (userMessage) => {
     return propertyResponses["lokasi"];
   } else if (/pembayaran|dp|cicilan/.test(userMessage)) {
     return propertyResponses["pembayaran"];
-  } else if (/agent|marketing|hubungi/.test(userMessage)) {
-    return propertyResponses["agent"];
+  } else if (/admin|marketing|hubungi/.test(userMessage)) {
+    return propertyResponses["admin"];
   } else if (/booking|beli|unit/.test(userMessage)) {
     return propertyResponses["booking"];
   } else if (/terima kasih|makasih/.test(userMessage)) {

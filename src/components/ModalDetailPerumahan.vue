@@ -18,7 +18,7 @@
       >
         <h3
           :id="'modal-title-' + property.id"
-          class="text-lg sm:text-xl md:text-2xl font-bold text-white truncate max-w-[70%] md:max-w-[80%] whitespace-nowrap overflow-hidden text-ellipsis"
+          class="text-lg sm:text-xl md:text-2xl font-bold text-white break-words"
           :title="property.title"
         >
           {{ property.title }}
@@ -413,6 +413,11 @@ export default {
       showPromoModal: false,
       alwaysShowNavButtons: false,
       selectedProperty: null, // Properti untuk modal promo
+      zoomScale: 1, // Skala zoom untuk gambar
+      isDragging: false, // Status drag
+      dragStart: { x: 0, y: 0 }, // Posisi awal drag
+      imageOffset: { x: 0, y: 0 }, // Offset gambar saat di-drag
+      dragDelta: { x: 0, y: 0 }, // Delta pergerakan drag
     };
   },
   computed: {
@@ -513,6 +518,7 @@ export default {
           elem.msRequestFullscreen();
         }
         this.isFullscreen = true;
+        this.addZoomListeners(); // Tambahkan event listener untuk zoom
       } else {
         // Keluar dari mode fullscreen
         if (document.exitFullscreen) {
@@ -523,8 +529,83 @@ export default {
           document.msExitFullscreen();
         }
         this.isFullscreen = false;
+        this.removeZoomListeners(); // Hapus event listener untuk zoom
+        this.resetImageTransform(); // Reset transformasi gambar
       }
     }, 300), // Debounce selama 300ms
+    addZoomListeners() {
+      const image = this.$refs.mainImage;
+      if (image) {
+        image.addEventListener("wheel", this.handleZoom);
+        image.addEventListener("mousedown", this.startDrag);
+      }
+      document.addEventListener("mouseup", this.stopDrag);
+      document.addEventListener("mousemove", this.handleDrag);
+    },
+    removeZoomListeners() {
+      const image = this.$refs.mainImage;
+      if (image) {
+        image.removeEventListener("wheel", this.handleZoom);
+        image.removeEventListener("mousedown", this.startDrag);
+      }
+      document.removeEventListener("mouseup", this.stopDrag);
+      document.removeEventListener("mousemove", this.handleDrag);
+    },
+    startDrag(event) {
+      if (this.zoomScale > 1) {
+        this.isDragging = true;
+        this.dragStart = { x: event.clientX, y: event.clientY };
+        const image = this.$refs.mainImage;
+        if (image) {
+          image.style.transition = "none"; // Matikan transisi saat drag dimulai
+        }
+      }
+    },
+    stopDrag() {
+      if (this.isDragging) {
+        this.isDragging = false;
+        const image = this.$refs.mainImage;
+        if (image) {
+          image.style.transition = "transform 0.2s ease"; // Hidupkan transisi setelah drag selesai
+        }
+      }
+    },
+    handleDrag(event) {
+      if (this.isDragging && this.zoomScale > 1) {
+        const deltaX = event.clientX - this.dragStart.x;
+        const deltaY = event.clientY - this.dragStart.y;
+        this.dragStart = { x: event.clientX, y: event.clientY };
+        this.imageOffset.x += deltaX;
+        this.imageOffset.y += deltaY;
+
+        const image = this.$refs.mainImage;
+        if (image) {
+          image.style.transform = `scale(${this.zoomScale}) translate(${this.imageOffset.x}px, ${this.imageOffset.y}px)`;
+        }
+      }
+    },
+    handleZoom(event) {
+      event.preventDefault();
+      const zoomStep = 0.1;
+      if (event.deltaY < 0) {
+        // Zoom in
+        this.zoomScale = Math.min(this.zoomScale + zoomStep, 3); // Maksimal zoom 3x
+      } else {
+        // Zoom out
+        this.zoomScale = Math.max(this.zoomScale - zoomStep, 1); // Minimal zoom 1x
+      }
+
+      if (this.zoomScale === 1) {
+        // Reset offset jika zoom kembali ke 1x
+        this.imageOffset = { x: 0, y: 0 };
+      }
+
+      const image = this.$refs.mainImage;
+      if (image) {
+        image.style.transition = "transform 0.2s ease"; // Tambahkan transisi saat zoom
+        image.style.transform = `scale(${this.zoomScale}) translate(${this.imageOffset.x}px, ${this.imageOffset.y}px)`;
+      }
+    },
     handleFullscreenChange() {
       this.isFullscreen = !!(
         document.fullscreenElement ||
@@ -561,6 +642,15 @@ export default {
       );
       this.mediaItems[index].url = "/assets/images/default-thumbnail.jpg"; // Ganti dengan gambar default
     },
+    resetImageTransform() {
+      this.zoomScale = 1;
+      this.imageOffset = { x: 0, y: 0 };
+      const image = this.$refs.mainImage;
+      if (image) {
+        image.style.transition = "transform 0.2s ease"; // Tambahkan transisi saat reset
+        image.style.transform = `scale(1) translate(0, 0)`;
+      }
+    },
   },
   mounted() {
     document.addEventListener("fullscreenchange", this.handleFullscreenChange);
@@ -589,6 +679,7 @@ export default {
       this.handleFullscreenChange
     );
     clearTimeout(this.navButtonTimeout);
+    this.removeZoomListeners(); // Pastikan listener dihapus saat komponen dilepas
   },
 };
 </script>
@@ -596,7 +687,8 @@ export default {
 <style scoped>
 /* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-  height: 6px;
+  height: 4px; /* Make scrollbar thinner */
+  width: 4px; /* Add width for vertical scrollbars */
 }
 .custom-scrollbar::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
@@ -610,7 +702,8 @@ export default {
   background: rgba(255, 255, 255, 0.5);
 }
 .custom-scrollbar-thin::-webkit-scrollbar {
-  height: 4px;
+  height: 2px; /* Make thin scrollbar even thinner */
+  width: 2px; /* Add width for vertical scrollbars */
 }
 /* Responsive Text Truncation */
 @media (max-width: 640px) {

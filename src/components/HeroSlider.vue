@@ -48,10 +48,23 @@
             {{ slide.alt }}
           </h2>
           <button
-            class="bg-amber-rich text-white px-6 py-2 rounded-lg hover:bg-amber-dark transition-colors"
+            class="flex items-center justify-center gap-2 bg-amber-rich/90 text-white px-8 py-3 rounded-full hover:bg-amber-rich transition-all duration-300 group"
             @click="scrollToDaftar"
           >
-            Lihat Perumahan
+            <span>Lihat Perumahan</span>
+            <svg
+              class="w-5 h-5 group-hover:translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              ></path>
+            </svg>
           </button>
         </div>
       </div>
