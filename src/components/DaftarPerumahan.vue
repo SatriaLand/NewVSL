@@ -17,6 +17,7 @@
         class="relative overflow-hidden"
         ref="carousel"
         role="region"
+        aria-live="polite"
         aria-label="Carousel Daftar Perumahan"
       >
         <div
@@ -119,7 +120,9 @@ export default {
   },
   mounted() {
     this.updateSlideWidth();
-    window.addEventListener("resize", this.debouncedUpdateSlideWidth);
+    window.addEventListener("resize", this.debouncedUpdateSlideWidth, {
+      passive: true,
+    });
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.debouncedUpdateSlideWidth);
@@ -177,6 +180,10 @@ export default {
       this.selectedProperty = property;
       this.isModalOpen = true;
       document.body.style.overflow = "hidden";
+      this.$nextTick(() => {
+        const modal = this.$el.querySelector("[role='dialog']");
+        if (modal) modal.focus();
+      });
     },
     closeModal() {
       this.isModalOpen = false;

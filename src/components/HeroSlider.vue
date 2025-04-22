@@ -25,7 +25,6 @@
           :alt="slide.alt"
           class="w-full h-full object-cover"
           :class="{ hidden: isSmallScreen }"
-          loading="lazy"
           decoding="async"
         />
 
@@ -35,7 +34,6 @@
           :alt="slide.alt"
           class="w-full h-full object-cover blur-md"
           :class="{ hidden: !isSmallScreen }"
-          loading="lazy"
           decoding="async"
         />
 
